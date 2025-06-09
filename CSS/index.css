@@ -1,0 +1,29 @@
+*{
+    margin: unset;
+    padding: unset;
+}
+body{
+    background: #f2f2f2;
+    position: absolute;
+    top:  50%;
+    left: 50%;
+    transform: translate(-50%,-80%);
+}
+.container{
+    padding: 1rem;
+    display: inline-block;
+
+}
+#setup label {
+    display: block;
+    margin-bottom: 1rem;
+}
+#setup input, select{
+    height: 2rem;
+    text-align: center;
+    border: 1px solid #bfbfbf;
+}
+
+#startButton{
+    padding: 1rem
+}
