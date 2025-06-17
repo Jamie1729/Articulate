@@ -1,38 +1,20 @@
-// Constants and Enumerations -----------------------------------------------
+import {generate_array, shuffle_array, set_innerHTML} from "./utils.js";
 
+let setup = document.getElementById('setup')
+setup.onsubmit = async (event) => {
+    event.preventDefault()
+    const num_teams = setup.num_teams.value
+    const mode = setup.mode.value
+    const card_set = setup.card_set.value
+    game_init(num_teams, mode, card_set)
+}
+
+// Constants and Enumerations -----------------------------------------------
 const PERSON = 0; const WORLD  = 1; const OBJECT = 2; const ACTION = 3; const NATURE = 4; const RANDOM = 5;
 
 const SHORT = 30;
 const LONG = 60;
 
-// Utility Functions ---------------------------------------------------------
-/**
- * Shuffle an array pseudo-randomly
- * @param {Array} arr The array to be sorted.
- * @returns {Array} An array containing all the elements of `arr`, in a random order.
- */
-function shuffle_array(arr){
-    let newArr = [];
-    let index;
-    while (arr.length !== 0) {
-        index = Math.floor(Math.random() * arr.length);
-        newArr.push(arr[index]);
-        arr.splice(index, 1);
-    }
-    return newArr;
-}
-
-/**
- * Generate an array filled with a specified value
- * @param {int} len Desired length of the returned array.
- * @param {any} value The value to be put in all entries of the returned array.
- * @returns {Array} An array filled with `len` copies of `value`
- */
-function generate_array(len, value){
-    let arr = [];
-    for (let i =0;i<len;i++){arr.push(value);}
-    return arr;
-}
 
 // Card Sets -----------------------------------------------------------------
 
@@ -2002,17 +1984,13 @@ async function start_timed_game(num_teams, timer_length){
     let game_over = false;
     let team_points = generate_array(num_teams, 0);
 
-    await set_page_cat_select()
+    await set_innerHTML("../pages/cat_select.html")
     document.getElementById("cat_select").onsubmit = async (event) => {
         event.preventDefault();
         console.log(event.submitter.id)
 
     }
 
-}
-async function set_page_cat_select() {
-    const response = await fetch('../pages/cat_select.html');
-    document.body.innerHTML = await response.text();
 }
 
 function start_free_game(numTeams){
