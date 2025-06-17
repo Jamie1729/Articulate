@@ -1,4 +1,4 @@
-import {generate_array, shuffle_array, set_innerHTML} from "./utils.js";
+import {generate_array, shuffle_array, set_innerHTML, get_category_enum} from "./utils.js";
 
 let setup = document.getElementById('setup')
 setup.onsubmit = async (event) => {
@@ -1936,8 +1936,9 @@ const random_words =shuffle_array( [
     "construct"
 ] );
 
-// Game Setup and Logic ------------------------------------------------------
+const word_lists = [person_words, world_words, object_words, action_words, nature_words, random_words]
 
+// Game Setup and Logic ------------------------------------------------------
 /**
  *
  * @param {int} num_teams Number of teams in the game [Min 2, Max 100]
@@ -1978,20 +1979,59 @@ function game_init(num_teams, mode, card_set){
     }
 }
 
-
 async function start_timed_game(num_teams, timer_length){
     let current_team = 0;
     let game_over = false;
     let team_points = generate_array(num_teams, 0);
+    let cat_indexes = [0,0,0,0,0,0]
+        let current_cat = null;
+        await set_innerHTML("../pages/cat_select.html")
+        document.getElementById("cat_select").onsubmit = async (event) => {
+            event.preventDefault();
+            current_cat = get_category_enum(event.submitter.id);
+            await play_round(current_team,current_cat,timer_length, cat_indexes[current_cat]);
+        }
 
-    await set_innerHTML("../pages/cat_select.html")
-    document.getElementById("cat_select").onsubmit = async (event) => {
-        event.preventDefault();
-        console.log(event.submitter.id)
+}
 
+async function play_round(current_team, current_cat, timer_length, cat_index){
+    let round_score = 0;
+    let round_started = false;
+    await set_innerHTML("../pages/round.html");
+    let next_button  = document.getElementById("next_button");
+    let skip_button  = document.getElementById("skip_button");
+    skip_button.onclick = async (event) =>{
+        if (round_started) {
+            cat_index += 1;
+            word.innerText = word_lists[current_cat][cat_index];
+        }
+    }
+    let word         = document.getElementById("word");
+    let timer        = document.getElementById("timer");
+    timer.innerText = timer_length.toString();
+    next_button.onclick = async (event) => {
+        round_started = true;
+        next_button.innerText = "Next Word";
+        next_button.onclick = async (event) => {
+            cat_index += 1;
+            round_score += 1;
+            word.innerText = word_lists[current_cat][cat_index];
+        }
+        let timer_interval = setInterval(function() {
+            timer.innerText = ((timer.innerText)-1).toString();
+            if (timer.innerText === "0"){
+                next_button.remove();
+                skip_button.remove();
+                clearInterval(timer_interval);
+            }
+        },1000)
+
+        word.innerText = word_lists[current_cat][cat_index];
+        cat_index += 1;
     }
 
 }
+
 
 function start_free_game(numTeams){
     console.log("Not Yet Implemented.")

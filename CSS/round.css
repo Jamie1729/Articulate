@@ -1,0 +1,18 @@
+p {
+    font-size: 10rem
+}
+
+#next_button{
+    height: 5rem;
+    width: 5rem;
+}
+#skip_button{
+    height: 5rem;
+    width: 5rem;
+
+}
+
+#word{
+    width: max-content;
+    padding: 1rem;
+}
