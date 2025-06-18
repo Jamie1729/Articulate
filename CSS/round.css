@@ -9,7 +9,10 @@ p {
 #skip_button{
     height: 5rem;
     width: 5rem;
-
+}
+#end_round_button{
+    height: 5rem;
+    width: 5rem;
 }
 
 #word{

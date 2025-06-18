@@ -14,6 +14,7 @@ const PERSON = 0; const WORLD  = 1; const OBJECT = 2; const ACTION = 3; const NA
 
 const SHORT = 30;
 const LONG = 60;
+const TARGET = 20;
 
 
 // Card Sets -----------------------------------------------------------------
@@ -1974,7 +1975,7 @@ function game_init(num_teams, mode, card_set){
             console.log("Not Yet Implemented");
             break;
         default:
-            console.log("Something went wrong, card set.");
+            console.log("Something went wrong: card set.");
             break;
     }
 }
@@ -1984,12 +1985,15 @@ async function start_timed_game(num_teams, timer_length){
     let game_over = false;
     let team_points = generate_array(num_teams, 0);
     let cat_indexes = [0,0,0,0,0,0]
-        let current_cat = null;
+    let current_cat = null;
+
         await set_innerHTML("../pages/cat_select.html")
+        document.getElementById("team_turn").innerText = "It's your turn: team " + (current_team + 1);
         document.getElementById("cat_select").onsubmit = async (event) => {
             event.preventDefault();
             current_cat = get_category_enum(event.submitter.id);
-            await play_round(current_team,current_cat,timer_length, cat_indexes[current_cat]);
+            team_points[current_team] += await play_round(current_team, current_cat, timer_length, cat_indexes[current_cat]);
+            current_team = (current_team + 1) % num_teams;
         }
 
 }
@@ -2017,12 +2021,23 @@ async function play_round(current_team, current_cat, timer_length, cat_index){
             round_score += 1;
             word.innerText = word_lists[current_cat][cat_index];
         }
-        let timer_interval = setInterval(function() {
+        //timer and end of round logic
+        let timer_interval = setInterval( async function() {
             timer.innerText = ((timer.innerText)-1).toString();
             if (timer.innerText === "0"){
+                clearInterval(timer_interval);
                 next_button.remove();
                 skip_button.remove();
-                clearInterval(timer_interval);
+                word.innerText = "You scored "+round_score+" points!";
+
+                let end_round_button = document.createElement("button")
+                end_round_button.id = "end_round_button";
+                end_round_button.innerText = "End Round";
+                end_round_button.onclick = async (event) => {
+                    event.preventDefault();
+                    return round_score;
+                }
+                document.body.appendChild(end_round_button);
             }
         },1000)
 
@@ -2031,7 +2046,6 @@ async function play_round(current_team, current_cat, timer_length, cat_index){
     }
 
 }
-
 
 function start_free_game(numTeams){
     console.log("Not Yet Implemented.")
