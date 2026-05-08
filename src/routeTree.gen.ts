@@ -13,8 +13,10 @@ import { Route as RulesRouteImport } from './routes/rules'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthedLobbyRouteImport } from './routes/_authed/lobby'
+import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AuthedLobbyCreateRouteImport } from './routes/_authed/lobby/create'
+import { Route as AuthedLobbyLobbyIdRouteImport } from './routes/_authed/lobby/$lobbyId'
 
 const RulesRoute = RulesRouteImport.update({
   id: '/rules',
@@ -35,9 +37,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedLobbyRoute = AuthedLobbyRouteImport.update({
-  id: '/lobby',
-  path: '/lobby',
+const AuthedHomeRoute = AuthedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -45,19 +47,33 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedLobbyCreateRoute = AuthedLobbyCreateRouteImport.update({
+  id: '/lobby/create',
+  path: '/lobby/create',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedLobbyLobbyIdRoute = AuthedLobbyLobbyIdRouteImport.update({
+  id: '/lobby/$lobbyId',
+  path: '/lobby/$lobbyId',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/rules': typeof RulesRoute
-  '/lobby': typeof AuthedLobbyRoute
+  '/home': typeof AuthedHomeRoute
+  '/lobby/$lobbyId': typeof AuthedLobbyLobbyIdRoute
+  '/lobby/create': typeof AuthedLobbyCreateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/rules': typeof RulesRoute
-  '/lobby': typeof AuthedLobbyRoute
+  '/home': typeof AuthedHomeRoute
+  '/lobby/$lobbyId': typeof AuthedLobbyLobbyIdRoute
+  '/lobby/create': typeof AuthedLobbyCreateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -66,21 +82,39 @@ export interface FileRoutesById {
   '/_authed': typeof AuthedRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/rules': typeof RulesRoute
-  '/_authed/lobby': typeof AuthedLobbyRoute
+  '/_authed/home': typeof AuthedHomeRoute
+  '/_authed/lobby/$lobbyId': typeof AuthedLobbyLobbyIdRoute
+  '/_authed/lobby/create': typeof AuthedLobbyCreateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/rules' | '/lobby' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/rules'
+    | '/home'
+    | '/lobby/$lobbyId'
+    | '/lobby/create'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/rules' | '/lobby' | '/api/auth/$'
+  to:
+    | '/'
+    | '/login'
+    | '/rules'
+    | '/home'
+    | '/lobby/$lobbyId'
+    | '/lobby/create'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/_authed'
     | '/login'
     | '/rules'
-    | '/_authed/lobby'
+    | '/_authed/home'
+    | '/_authed/lobby/$lobbyId'
+    | '/_authed/lobby/create'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -122,11 +156,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authed/lobby': {
-      id: '/_authed/lobby'
-      path: '/lobby'
-      fullPath: '/lobby'
-      preLoaderRoute: typeof AuthedLobbyRouteImport
+    '/_authed/home': {
+      id: '/_authed/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthedHomeRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
     '/api/auth/$': {
@@ -136,15 +170,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/lobby/create': {
+      id: '/_authed/lobby/create'
+      path: '/lobby/create'
+      fullPath: '/lobby/create'
+      preLoaderRoute: typeof AuthedLobbyCreateRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/lobby/$lobbyId': {
+      id: '/_authed/lobby/$lobbyId'
+      path: '/lobby/$lobbyId'
+      fullPath: '/lobby/$lobbyId'
+      preLoaderRoute: typeof AuthedLobbyLobbyIdRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
   }
 }
 
 interface AuthedRouteRouteChildren {
-  AuthedLobbyRoute: typeof AuthedLobbyRoute
+  AuthedHomeRoute: typeof AuthedHomeRoute
+  AuthedLobbyLobbyIdRoute: typeof AuthedLobbyLobbyIdRoute
+  AuthedLobbyCreateRoute: typeof AuthedLobbyCreateRoute
 }
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
-  AuthedLobbyRoute: AuthedLobbyRoute,
+  AuthedHomeRoute: AuthedHomeRoute,
+  AuthedLobbyLobbyIdRoute: AuthedLobbyLobbyIdRoute,
+  AuthedLobbyCreateRoute: AuthedLobbyCreateRoute,
 }
 
 const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(

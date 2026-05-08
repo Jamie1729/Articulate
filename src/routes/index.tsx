@@ -30,7 +30,7 @@ function HomePage() {
             Playing as <span className="text-foreground font-medium">{auth.user?.name}</span>
           </span>
         ) : (
-          <Link to="/login" search={{ redirect: '/lobby' }}>
+          <Link to="/login" search={{ redirect: '/home' }}>
             <Button variant="outline" size="sm">Sign In</Button>
           </Link>
         )}
@@ -55,7 +55,7 @@ function HomePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="mt-auto">
-                <Button className="w-full" onClick={() => navigate({ to: '/lobby' })}>
+                <Button className="w-full" onClick={() => navigate({ to: '/lobby/create' })}>
                   Create Lobby
                 </Button>
               </CardContent>
@@ -83,7 +83,7 @@ function HomePage() {
             </Card>
           </div>
         ) : (
-          <Link to="/login" search={{ redirect: '/lobby' }}>
+          <Link to="/login" search={{ redirect: '/home' }}>
             <Button size="lg" className="px-10">Play Now</Button>
           </Link>
         )}

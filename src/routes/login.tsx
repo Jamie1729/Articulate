@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute('/login')({
   validateSearch: (search) => ({
-    redirect: (search.redirect as string) || '/lobby',
+    redirect: (search.redirect as string) || '/home',
   }),
   beforeLoad: ({ context, search }) => {
     if (context.auth?.isAuthenticated) {
