@@ -1,9 +1,10 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useForm } from '@tanstack/react-form'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Field, FieldLabel, FieldError } from '@/components/ui/field'
 import {
   Card,
   CardContent,
@@ -27,48 +28,6 @@ export const Route = createFileRoute('/login')({
 
 function LoginComponent() {
   const { redirect } = Route.useSearch()
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-
-  const [signInEmail, setSignInEmail] = useState('')
-  const [signInPassword, setSignInPassword] = useState('')
-
-  const [signUpName, setSignUpName] = useState('')
-  const [signUpEmail, setSignUpEmail] = useState('')
-  const [signUpPassword, setSignUpPassword] = useState('')
-
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
-    const result = await authClient.signIn.email({
-      email: signInEmail,
-      password: signInPassword,
-    })
-    if (result.error) {
-      setError(result.error.message ?? 'Sign in failed')
-      setIsLoading(false)
-    } else {
-      window.location.href = redirect
-    }
-  }
-
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
-    const result = await authClient.signUp.email({
-      email: signUpEmail,
-      password: signUpPassword,
-      name: signUpName,
-    })
-    if (result.error) {
-      setError(result.error.message ?? 'Sign up failed')
-      setIsLoading(false)
-    } else {
-      window.location.href = redirect
-    }
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -78,7 +37,7 @@ function LoginComponent() {
           <p className="text-muted-foreground mt-2">The fast-talking description game</p>
         </div>
 
-        <Tabs defaultValue="sign-in" onValueChange={() => setError('')}>
+        <Tabs defaultValue="sign-in">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="sign-in">Sign In</TabsTrigger>
             <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
@@ -91,35 +50,7 @@ function LoginComponent() {
                 <CardDescription>Sign in to join or create a game</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  {error && (
-                    <p className="text-sm text-destructive">{error}</p>
-                  )}
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
-                    <Input
-                      id="signin-email"
-                      type="email"
-                      value={signInEmail}
-                      onChange={(e) => setSignInEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
-                    <Input
-                      id="signin-password"
-                      type="password"
-                      value={signInPassword}
-                      onChange={(e) => setSignInPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Signing in…' : 'Sign In'}
-                  </Button>
-                </form>
+                <SignInForm redirectTo={redirect} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -131,51 +62,206 @@ function LoginComponent() {
                 <CardDescription>Pick a name your teammates will know you by</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  {error && (
-                    <p className="text-sm text-destructive">{error}</p>
-                  )}
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Display name</Label>
-                    <Input
-                      id="signup-name"
-                      type="text"
-                      value={signUpName}
-                      onChange={(e) => setSignUpName(e.target.value)}
-                      placeholder="e.g. Jamie"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      value={signUpEmail}
-                      onChange={(e) => setSignUpEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      value={signUpPassword}
-                      onChange={(e) => setSignUpPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Creating account…' : 'Create Account'}
-                  </Button>
-                </form>
+                <SignUpForm redirectTo={redirect} />
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
     </div>
+  )
+}
+
+function SignInForm({ redirectTo }: { redirectTo: string }) {
+  const [serverError, setServerError] = useState('')
+
+  const form = useForm({
+    defaultValues: { email: '', password: '' },
+    onSubmit: async ({ value }) => {
+      setServerError('')
+      const result = await authClient.signIn.email(value)
+      if (result.error) {
+        setServerError(result.error.message ?? 'Sign in failed')
+      } else {
+        window.location.href = redirectTo
+      }
+    },
+  })
+
+  return (
+    <form
+      onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }}
+      className="space-y-4"
+    >
+      {serverError && <p className="text-sm text-destructive">{serverError}</p>}
+
+      <form.Field
+        name="email"
+        validators={{
+          onBlur: ({ value }) =>
+            !value ? 'Required' :
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? 'Invalid email' :
+            undefined,
+        }}
+      >
+        {(field) => (
+          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+            <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+            <Input
+              id={field.name}
+              type="email"
+              placeholder="you@example.com"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+            {field.state.meta.isTouched && (
+              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+            )}
+          </Field>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="password"
+        validators={{
+          onBlur: ({ value }) => !value ? 'Required' : undefined,
+        }}
+      >
+        {(field) => (
+          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+            <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+            <Input
+              id={field.name}
+              type="password"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+            {field.state.meta.isTouched && (
+              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+            )}
+          </Field>
+        )}
+      </form.Field>
+
+      <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
+        {([canSubmit, isSubmitting]) => (
+          <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
+            {isSubmitting ? 'Signing in…' : 'Sign In'}
+          </Button>
+        )}
+      </form.Subscribe>
+    </form>
+  )
+}
+
+function SignUpForm({ redirectTo }: { redirectTo: string }) {
+  const [serverError, setServerError] = useState('')
+
+  const form = useForm({
+    defaultValues: { name: '', email: '', password: '' },
+    onSubmit: async ({ value }) => {
+      setServerError('')
+      const result = await authClient.signUp.email(value)
+      if (result.error) {
+        setServerError(result.error.message ?? 'Sign up failed')
+      } else {
+        window.location.href = redirectTo
+      }
+    },
+  })
+
+  return (
+    <form
+      onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }}
+      className="space-y-4"
+    >
+      {serverError && <p className="text-sm text-destructive">{serverError}</p>}
+
+      <form.Field
+        name="name"
+        validators={{
+          onBlur: ({ value }) => !value ? 'Required' : undefined,
+        }}
+      >
+        {(field) => (
+          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+            <FieldLabel htmlFor={field.name}>Display name</FieldLabel>
+            <Input
+              id={field.name}
+              placeholder="e.g. Jamie"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+            {field.state.meta.isTouched && (
+              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+            )}
+          </Field>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="email"
+        validators={{
+          onBlur: ({ value }) =>
+            !value ? 'Required' :
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? 'Invalid email' :
+            undefined,
+        }}
+      >
+        {(field) => (
+          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+            <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+            <Input
+              id={field.name}
+              type="email"
+              placeholder="you@example.com"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+            {field.state.meta.isTouched && (
+              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+            )}
+          </Field>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="password"
+        validators={{
+          onBlur: ({ value }) =>
+            !value ? 'Required' :
+            value.length < 8 ? 'At least 8 characters' :
+            undefined,
+        }}
+      >
+        {(field) => (
+          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+            <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+            <Input
+              id={field.name}
+              type="password"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+            {field.state.meta.isTouched && (
+              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+            )}
+          </Field>
+        )}
+      </form.Field>
+
+      <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
+        {([canSubmit, isSubmitting]) => (
+          <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
+            {isSubmitting ? 'Creating account…' : 'Create Account'}
+          </Button>
+        )}
+      </form.Subscribe>
+    </form>
   )
 }
