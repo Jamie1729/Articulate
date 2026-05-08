@@ -1,11 +1,17 @@
 import {
   pgTable,
+  pgEnum,
   text,
   timestamp,
   boolean,
   integer,
   jsonb,
 } from 'drizzle-orm/pg-core'
+import type { LobbySettings } from './types'
+
+export const lobbyStatusEnum = pgEnum('lobby_status', ['waiting', 'playing', 'finished'])
+export const gameStatusEnum = pgEnum('game_status', ['active', 'finished'])
+export const cardCategoryEnum = pgEnum('card_category', ['Object', 'Nature', 'Random', 'Person', 'Action', 'World'])
 
 // BetterAuth required tables
 export const user = pgTable('user', {
@@ -65,7 +71,8 @@ export const lobbies = pgTable('lobbies', {
   hostId: text('host_id')
     .notNull()
     .references(() => user.id),
-  status: text('status').notNull().default('waiting'), // waiting | playing | finished
+  status: lobbyStatusEnum('status').notNull().default('waiting'),
+  settings: jsonb('settings').notNull().$type<LobbySettings>(),
   createdAt: timestamp('created_at').notNull(),
 })
 
@@ -77,7 +84,7 @@ export const lobbyPlayers = pgTable('lobby_players', {
   userId: text('user_id')
     .notNull()
     .references(() => user.id),
-  teamNumber: integer('team_number').notNull(),
+  teamNumber: integer('team_number'),
   joinedAt: timestamp('joined_at').notNull(),
 })
 
@@ -88,12 +95,12 @@ export const games = pgTable('games', {
     .references(() => lobbies.id),
   currentTeam: integer('current_team').notNull().default(0),
   boardPositions: jsonb('board_positions').notNull().default([]),
-  status: text('status').notNull().default('active'), // active | finished
+  status: gameStatusEnum('status').notNull().default('active'),
   createdAt: timestamp('created_at').notNull(),
 })
 
 export const cards = pgTable('cards', {
   id: text('id').primaryKey(),
-  category: text('category').notNull(), // Object | Nature | Random | Person | Action | World
+  category: cardCategoryEnum('category').notNull(),
   word: text('word').notNull(),
 })

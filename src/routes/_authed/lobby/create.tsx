@@ -1,5 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useForm } from '@tanstack/react-form'
+import { createLobby } from '@/lib/server/lobby'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -54,12 +55,13 @@ const DEFAULTS = {
 }
 
 function CreateLobbyPage() {
+  const navigate = useNavigate()
+
   const form = useForm({
     defaultValues: DEFAULTS,
     onSubmit: async ({ value }) => {
-      console.log('Create lobby with settings:', value)
-      // TODO: call API to create lobby, then navigate to /lobby/$lobbyId
-      // navigate({ to: '/lobby/$lobbyId', params: { lobbyId: result.id } })
+      const { code } = await createLobby({ data: value })
+      navigate({ to: '/lobby/$lobbyId', params: { lobbyId: code } })
     },
   })
 
