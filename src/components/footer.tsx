@@ -8,7 +8,10 @@ export const Footer = () => {
     <div>
       <Separator />
       <div className="flex items-center justify-center gap-6 px-6 py-4 bg-muted text-sm text-muted-foreground">
-        <Link to="/rules" className="flex items-center gap-1.5 hover:text-foreground transition-colors">
+        <Link
+          to="/rules"
+          className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+        >
           <BookOpen size={14} />
           How to Play
         </Link>

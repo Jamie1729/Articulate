@@ -1,31 +1,31 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { LogOut } from 'lucide-react'
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { LogOut } from "lucide-react";
 
-export const Route = createFileRoute('/_authed/home')({
+export const Route = createFileRoute("/_authed/home")({
   component: HomePage,
-})
+});
 
 function HomePage() {
-  const { auth } = Route.useRouteContext()
-  const navigate = useNavigate()
-  const [lobbyCode, setLobbyCode] = useState('')
+  const { auth } = Route.useRouteContext();
+  const navigate = useNavigate();
+  const [lobbyCode, setLobbyCode] = useState("");
 
   const handleSignOut = async () => {
-    await authClient.signOut()
-    window.location.href = '/'
-  }
+    await authClient.signOut();
+    window.location.href = "/";
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -47,7 +47,7 @@ function HomePage() {
         {/* Welcome */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Welcome back, {auth?.user?.name?.split(' ')[0]}
+            Welcome back, {auth?.user?.name?.split(" ")[0]}
           </h1>
           <p className="text-muted-foreground mt-1">Ready to play?</p>
         </div>
@@ -62,7 +62,10 @@ function HomePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="mt-auto">
-              <Button className="w-full" onClick={() => navigate({ to: '/lobby/create' })}>
+              <Button
+                className="w-full"
+                onClick={() => navigate({ to: "/lobby/create" })}
+              >
                 Create Lobby
               </Button>
             </CardContent>
@@ -71,9 +74,7 @@ function HomePage() {
           <Card className="flex flex-col">
             <CardHeader>
               <CardTitle>Join a lobby</CardTitle>
-              <CardDescription>
-                Enter the code from your host
-              </CardDescription>
+              <CardDescription>Enter the code from your host</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 mt-auto">
               <Input
@@ -86,7 +87,12 @@ function HomePage() {
               <Button
                 className="w-full"
                 disabled={lobbyCode.length < 4}
-                onClick={() => navigate({ to: '/lobby/$lobbyId', params: { lobbyId: lobbyCode } })}
+                onClick={() =>
+                  navigate({
+                    to: "/lobby/$lobbyId",
+                    params: { lobbyId: lobbyCode },
+                  })
+                }
               >
                 Join
               </Button>
@@ -100,14 +106,16 @@ function HomePage() {
           <h2 className="text-lg font-semibold mb-4">Your Stats</h2>
           <div className="grid grid-cols-3 gap-4 text-center">
             {[
-              { label: 'Games Played', value: '—' },
-              { label: 'Wins', value: '—' },
-              { label: 'Words Described', value: '—' },
+              { label: "Games Played", value: "—" },
+              { label: "Wins", value: "—" },
+              { label: "Words Described", value: "—" },
             ].map((stat) => (
               <Card key={stat.label}>
                 <CardContent className="pt-6">
                   <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {stat.label}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -115,5 +123,5 @@ function HomePage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

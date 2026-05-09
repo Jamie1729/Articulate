@@ -1,24 +1,24 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Footer } from '@/components/footer'
+} from "@/components/ui/card";
+import { Footer } from "@/components/footer";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: HomePage,
-})
+});
 
 function HomePage() {
-  const { auth } = Route.useRouteContext()
-  const [lobbyCode, setLobbyCode] = useState('')
-  const navigate = useNavigate()
+  const { auth } = Route.useRouteContext();
+  const [lobbyCode, setLobbyCode] = useState("");
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -27,11 +27,16 @@ function HomePage() {
         <span className="font-bold text-lg tracking-tight">Articulate</span>
         {auth?.isAuthenticated ? (
           <span className="text-sm text-muted-foreground">
-            Playing as <span className="text-foreground font-medium">{auth.user?.name}</span>
+            Playing as{" "}
+            <span className="text-foreground font-medium">
+              {auth.user?.name}
+            </span>
           </span>
         ) : (
-          <Link to="/login" search={{ redirect: '/home' }}>
-            <Button variant="outline" size="sm">Sign In</Button>
+          <Link to="/login" search={{ redirect: "/home" }}>
+            <Button variant="outline" size="sm">
+              Sign In
+            </Button>
           </Link>
         )}
       </header>
@@ -55,7 +60,10 @@ function HomePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="mt-auto">
-                <Button className="w-full" onClick={() => navigate({ to: '/lobby/create' })}>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate({ to: "/lobby/create" })}
+                >
                   Create Lobby
                 </Button>
               </CardContent>
@@ -64,9 +72,7 @@ function HomePage() {
             <Card className="flex flex-col">
               <CardHeader>
                 <CardTitle>Join a lobby</CardTitle>
-                <CardDescription>
-                  Enter the code from your host
-                </CardDescription>
+                <CardDescription>Enter the code from your host</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2 mt-auto">
                 <Input
@@ -83,13 +89,15 @@ function HomePage() {
             </Card>
           </div>
         ) : (
-          <Link to="/login" search={{ redirect: '/home' }}>
-            <Button size="lg" className="px-10">Play Now</Button>
+          <Link to="/login" search={{ redirect: "/home" }}>
+            <Button size="lg" className="px-10">
+              Play Now
+            </Button>
           </Link>
         )}
       </main>
 
       <Footer />
     </div>
-  )
+  );
 }

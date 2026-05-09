@@ -1,40 +1,42 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useState } from 'react'
-import { useForm } from '@tanstack/react-form'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Field, FieldLabel, FieldError } from '@/components/ui/field'
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useState } from "react";
+import { useForm } from "@tanstack/react-form";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute("/login")({
   validateSearch: (search) => ({
-    redirect: (search.redirect as string) || '/home',
+    redirect: (search.redirect as string) || "/home",
   }),
   beforeLoad: ({ context, search }) => {
     if (context.auth?.isAuthenticated) {
-      throw redirect({ to: search.redirect })
+      throw redirect({ to: search.redirect });
     }
   },
   component: LoginComponent,
-})
+});
 
 function LoginComponent() {
-  const { redirect } = Route.useSearch()
+  const { redirect } = Route.useSearch();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md px-4">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold tracking-tight">Articulate</h1>
-          <p className="text-muted-foreground mt-2">The fast-talking description game</p>
+          <p className="text-muted-foreground mt-2">
+            The fast-talking description game
+          </p>
         </div>
 
         <Tabs defaultValue="sign-in">
@@ -47,7 +49,9 @@ function LoginComponent() {
             <Card>
               <CardHeader>
                 <CardTitle>Welcome back</CardTitle>
-                <CardDescription>Sign in to join or create a game</CardDescription>
+                <CardDescription>
+                  Sign in to join or create a game
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <SignInForm redirectTo={redirect} />
@@ -59,7 +63,9 @@ function LoginComponent() {
             <Card>
               <CardHeader>
                 <CardTitle>Create an account</CardTitle>
-                <CardDescription>Pick a name your teammates will know you by</CardDescription>
+                <CardDescription>
+                  Pick a name your teammates will know you by
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <SignUpForm redirectTo={redirect} />
@@ -69,28 +75,31 @@ function LoginComponent() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }
 
 function SignInForm({ redirectTo }: { redirectTo: string }) {
-  const [serverError, setServerError] = useState('')
+  const [serverError, setServerError] = useState("");
 
   const form = useForm({
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: "", password: "" },
     onSubmit: async ({ value }) => {
-      setServerError('')
-      const result = await authClient.signIn.email(value)
+      setServerError("");
+      const result = await authClient.signIn.email(value);
       if (result.error) {
-        setServerError(result.error.message ?? 'Sign in failed')
+        setServerError(result.error.message ?? "Sign in failed");
       } else {
-        window.location.href = redirectTo
+        window.location.href = redirectTo;
       }
     },
-  })
+  });
 
   return (
     <form
-      onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
       className="space-y-4"
     >
       {serverError && <p className="text-sm text-destructive">{serverError}</p>}
@@ -99,13 +108,19 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
         name="email"
         validators={{
           onBlur: ({ value }) =>
-            !value ? 'Required' :
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? 'Invalid email' :
-            undefined,
+            !value
+              ? "Required"
+              : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                ? "Invalid email"
+                : undefined,
         }}
       >
         {(field) => (
-          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+          <Field
+            data-invalid={
+              field.state.meta.isTouched && !field.state.meta.isValid
+            }
+          >
             <FieldLabel htmlFor={field.name}>Email</FieldLabel>
             <Input
               id={field.name}
@@ -116,7 +131,11 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
               onBlur={field.handleBlur}
             />
             {field.state.meta.isTouched && (
-              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+              <FieldError
+                errors={field.state.meta.errors.map((e) => ({
+                  message: String(e),
+                }))}
+              />
             )}
           </Field>
         )}
@@ -125,11 +144,15 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
       <form.Field
         name="password"
         validators={{
-          onBlur: ({ value }) => !value ? 'Required' : undefined,
+          onBlur: ({ value }) => (!value ? "Required" : undefined),
         }}
       >
         {(field) => (
-          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+          <Field
+            data-invalid={
+              field.state.meta.isTouched && !field.state.meta.isValid
+            }
+          >
             <FieldLabel htmlFor={field.name}>Password</FieldLabel>
             <Input
               id={field.name}
@@ -139,7 +162,11 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
               onBlur={field.handleBlur}
             />
             {field.state.meta.isTouched && (
-              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+              <FieldError
+                errors={field.state.meta.errors.map((e) => ({
+                  message: String(e),
+                }))}
+              />
             )}
           </Field>
         )}
@@ -147,34 +174,41 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
 
       <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
         {([canSubmit, isSubmitting]) => (
-          <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-            {isSubmitting ? 'Signing in…' : 'Sign In'}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!canSubmit || isSubmitting}
+          >
+            {isSubmitting ? "Signing in…" : "Sign In"}
           </Button>
         )}
       </form.Subscribe>
     </form>
-  )
+  );
 }
 
 function SignUpForm({ redirectTo }: { redirectTo: string }) {
-  const [serverError, setServerError] = useState('')
+  const [serverError, setServerError] = useState("");
 
   const form = useForm({
-    defaultValues: { name: '', email: '', password: '' },
+    defaultValues: { name: "", email: "", password: "" },
     onSubmit: async ({ value }) => {
-      setServerError('')
-      const result = await authClient.signUp.email(value)
+      setServerError("");
+      const result = await authClient.signUp.email(value);
       if (result.error) {
-        setServerError(result.error.message ?? 'Sign up failed')
+        setServerError(result.error.message ?? "Sign up failed");
       } else {
-        window.location.href = redirectTo
+        window.location.href = redirectTo;
       }
     },
-  })
+  });
 
   return (
     <form
-      onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
       className="space-y-4"
     >
       {serverError && <p className="text-sm text-destructive">{serverError}</p>}
@@ -182,11 +216,15 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
       <form.Field
         name="name"
         validators={{
-          onBlur: ({ value }) => !value ? 'Required' : undefined,
+          onBlur: ({ value }) => (!value ? "Required" : undefined),
         }}
       >
         {(field) => (
-          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+          <Field
+            data-invalid={
+              field.state.meta.isTouched && !field.state.meta.isValid
+            }
+          >
             <FieldLabel htmlFor={field.name}>Display name</FieldLabel>
             <Input
               id={field.name}
@@ -196,7 +234,11 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
               onBlur={field.handleBlur}
             />
             {field.state.meta.isTouched && (
-              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+              <FieldError
+                errors={field.state.meta.errors.map((e) => ({
+                  message: String(e),
+                }))}
+              />
             )}
           </Field>
         )}
@@ -206,13 +248,19 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
         name="email"
         validators={{
           onBlur: ({ value }) =>
-            !value ? 'Required' :
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? 'Invalid email' :
-            undefined,
+            !value
+              ? "Required"
+              : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                ? "Invalid email"
+                : undefined,
         }}
       >
         {(field) => (
-          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+          <Field
+            data-invalid={
+              field.state.meta.isTouched && !field.state.meta.isValid
+            }
+          >
             <FieldLabel htmlFor={field.name}>Email</FieldLabel>
             <Input
               id={field.name}
@@ -223,7 +271,11 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
               onBlur={field.handleBlur}
             />
             {field.state.meta.isTouched && (
-              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+              <FieldError
+                errors={field.state.meta.errors.map((e) => ({
+                  message: String(e),
+                }))}
+              />
             )}
           </Field>
         )}
@@ -233,13 +285,19 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
         name="password"
         validators={{
           onBlur: ({ value }) =>
-            !value ? 'Required' :
-            value.length < 8 ? 'At least 8 characters' :
-            undefined,
+            !value
+              ? "Required"
+              : value.length < 8
+                ? "At least 8 characters"
+                : undefined,
         }}
       >
         {(field) => (
-          <Field data-invalid={field.state.meta.isTouched && !field.state.meta.isValid}>
+          <Field
+            data-invalid={
+              field.state.meta.isTouched && !field.state.meta.isValid
+            }
+          >
             <FieldLabel htmlFor={field.name}>Password</FieldLabel>
             <Input
               id={field.name}
@@ -249,7 +307,11 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
               onBlur={field.handleBlur}
             />
             {field.state.meta.isTouched && (
-              <FieldError errors={field.state.meta.errors.map((e) => ({ message: String(e) }))} />
+              <FieldError
+                errors={field.state.meta.errors.map((e) => ({
+                  message: String(e),
+                }))}
+              />
             )}
           </Field>
         )}
@@ -257,11 +319,15 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
 
       <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
         {([canSubmit, isSubmitting]) => (
-          <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-            {isSubmitting ? 'Creating account…' : 'Create Account'}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!canSubmit || isSubmitting}
+          >
+            {isSubmitting ? "Creating account…" : "Create Account"}
           </Button>
         )}
       </form.Subscribe>
     </form>
-  )
+  );
 }

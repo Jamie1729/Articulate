@@ -1,14 +1,14 @@
-import { createRouter } from '@tanstack/react-router'
-import { routeTree } from './routeTree.gen'
+import { createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
 
 export interface RouterContext {
   auth: {
-    isAuthenticated: boolean
-    user: any
-    isLoading: boolean
-    login: (email: string, password: string) => Promise<void>
-    logout: () => Promise<void>
-  }
+    isAuthenticated: boolean;
+    user: any;
+    isLoading: boolean;
+    login: (email: string, password: string) => Promise<void>;
+    logout: () => Promise<void>;
+  };
 }
 
 export function getRouter() {
@@ -18,11 +18,11 @@ export function getRouter() {
       auth: undefined!,
     },
     scrollRestoration: true,
-  })
+  });
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
-    router: ReturnType<typeof getRouter>
+    router: ReturnType<typeof getRouter>;
   }
 }
