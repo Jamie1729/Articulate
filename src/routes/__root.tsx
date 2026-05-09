@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import type { RouterContext } from "../router";
+import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
@@ -36,6 +37,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       </head>
       <body>
         {children}
+        <Toaster />
         <Scripts />
       </body>
     </html>
