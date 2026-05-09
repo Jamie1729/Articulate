@@ -227,7 +227,11 @@ function CreateLobbyPage() {
                     </div>
                     <Slider
                       value={[field.state.value]}
-                      onValueChange={(values) => field.handleChange(values[0])}
+                      onValueChange={(value) =>
+                        field.handleChange(
+                          Array.isArray(value) ? value[0] : value,
+                        )
+                      }
                       min={15}
                       max={120}
                       step={5}
@@ -374,8 +378,10 @@ function CreateLobbyPage() {
                             </div>
                             <Slider
                               value={[field.state.value]}
-                              onValueChange={(values) =>
-                                field.handleChange(values[0])
+                              onValueChange={(value) =>
+                                field.handleChange(
+                                  Array.isArray(value) ? value[0] : value,
+                                )
                               }
                               min={20}
                               max={80}
